@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+	<head lang="en">
+
+	<script src="scripts/js/three.min.js"></script>
+	<script src="scripts/js/OrbitControls.js"></script>
+	</head>
+	<body>
+	<button onclick="location.href = 'index.html';" id="index">main page</button>
+	<button onclick="location.href = 'spotlight.html';" id="spotlight">spotlight</button>
+	<button onclick="location.href = 'ambientlight.html';" id="ambientlight">Ambient light</button>	<script>
+
+		var three = THREE;
+		var scene = new THREE.Scene();
+
+		var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, shadowMapEnabled :true,shadowMapSoft : true });
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		document.body.appendChild(renderer.domElement);
+		renderer.setClearColor("white");
+
+		var clock = new THREE.Clock();
+
+		//camera details
+		var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+		camera.position.x = 0;
+		camera.position.y = 4;
+		camera.position.z = 7;
+		camera.lookAt({x:0,y:0,z:0});
+
+
+		// textures
+		var wallbase = new THREE.MeshPhongMaterial({ shininess: 2, specular: "red" });
+		wallbase.shading = THREE.FlatShading;
+		var walltexture = THREE.ImageUtils.loadTexture("images/wallbase.jpg");
+
+		// bump mapping
+		var bumptexture = THREE.ImageUtils.loadTexture("images/texturebase.jpg");
+		wallbase.map = walltexture;
+		wallbase.normalMap = bumptexture;
+		wallbase.side = THREE.DoubleSide;
+
+		//grassbase
+		var grassbase = new THREE.MeshPhongMaterial({ shininess: 2, specular: "green" });
+		var grassbasetex = THREE.ImageUtils.loadTexture("images/grass.jpg");
+		grassbase.side = THREE.DoubleSide;
+		grassbase.receiveShadow = true;
+		grassbase.map = grassbasetex;
+
+
+
+		//roof
+		var roof = new THREE.MeshPhongMaterial({ shininess: 2, specular: "red" });
+		var rooftex = THREE.ImageUtils.loadTexture("images/wood1.jpg");
+		roof.map = rooftex;
+		roof.side = THREE.DoubleSide;
+		roof.wrapS = THREE.RepeatWrapping;
+		roof.wrapT = THREE.RepeatWrapping;
+
+
+		// door texture
+		var doortex = THREE.ImageUtils.loadTexture("images/door.jpg");
+		var door = new THREE.MeshBasicMaterial({ map: doortex, transparent: true });
+		door.side = THREE.DoubleSide;
+
+		//window texture
+		var windowtex = THREE.ImageUtils.loadTexture("images/window.jpg");
+		var windows = new THREE.MeshPhongMaterial({ map: windowtex, transparent: true });
+		windows.side = THREE.DoubleSide;
+
+		//controls
+		var controls = new THREE.OrbitControls(camera);
+		controls.damping = 0.5;
+		controls.addEventListener('change', render);
+
+		//Grassbase
+
+		var grass = new THREE.Mesh(new THREE.PlaneGeometry(20,20), grassbase);
+		grass.rotation.x = THREE.Math.degToRad(-90);
+		scene.add(grass);
+		grass.position.x =- 0.01;
+		grass.position.y =- 0.0;
+		grass.position.z =- 0.01;
+		grass.receiveShadow = true;
+
+		//home
+		var welcomehome = new THREE.MeshPhongMaterial({ shininess: 2, specular: "white" });
+		var welcomehometex = THREE.ImageUtils.loadTexture("images/welcome.jpg");
+		welcomehome.side = THREE.DoubleSide;
+		welcomehome.receiveShadow = true;
+		welcomehome.map = welcomehometex;
+
+		//sofa
+		var sofaset = new THREE.MeshPhongMaterial({ shininess: 2, specular: "red" });
+		var sofasettex = THREE.ImageUtils.loadTexture("images/sofa.jpg");
+		sofaset.side = THREE.DoubleSide;
+		//sofaset.receiveShadow = true;
+		sofaset.map = sofasettex;
+
+		// house construction
+
+		// house base
+
+			var base = new THREE.Mesh(new THREE.BoxGeometry(3, 2, 4), wallbase);
+			scene.add(base);
+			base.position.x = 0.2;
+			base.position.y = 1.04;
+			base.castShadow = true;
+			//base.receiveShadow = true;
+
+
+
+			// chimney
+
+				var chimney = new THREE.Mesh(new THREE.BoxGeometry(0.5,1.3,0.5), roof);
+				scene.add(chimney);
+				chimney.rotation.y = THREE.Math.degToRad(90);
+				chimney.position.x = 0.6;
+				chimney.position.y = 3.5;
+				chimney.position.z = 1.0;
+				chimney.castShadow = true;
+			//	chimney.receiveShadow = true;
+
+
+			// roof
+			// right triangle
+
+				var roofrplane = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 2.7), roof);
+				roofrplane.rotation.x = THREE.Math.degToRad(90);
+				roofrplane.rotation.y = THREE.Math.degToRad(45);
+				roofrplane.rotation.z = THREE.Math.degToRad(90);
+				roofrplane.position.x = - 0.78;
+				roofrplane.position.y = 2.80;
+				roofrplane.position.z = 0.10;
+				roofrplane.castShadow = true;
+				roofrplane.receiveShadow = true;
+				scene.add(roofrplane);
+
+			 //left triangle
+
+				var rooflplane = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 2.7), roof);
+				rooflplane.rotation.x = THREE.Math.degToRad(90);
+				rooflplane.rotation.y = THREE.Math.degToRad(-45);
+				rooflplane.rotation.z = THREE.Math.degToRad(90);
+				rooflplane.position.x = 1.10;
+				rooflplane.position.y = 2.80;
+				rooflplane.position.z = 0.10;
+				rooflplane.castShadow = true;
+				rooflplane.receiveShadow = true;
+				scene.add(rooflplane);
+
+			//base triangle of the roof
+				var roofbaseplane = new THREE.Mesh(new THREE.PlaneGeometry(4.1, 3.4), roof);
+				roofbaseplane.rotation.x = THREE.Math.degToRad(90);
+				roofbaseplane.rotation.z = THREE.Math.degToRad(90);
+				roofbaseplane.position.x = 0.2;
+				roofbaseplane.position.y = 2;
+				roofbaseplane.position.z = 0.15;
+				roofbaseplane.castShadow = true;
+				roofbaseplane.receiveShadow = true;
+				scene.add(roofbaseplane);
+
+			// front view of triangle
+
+				var fronttriangle = new THREE.Shape();
+				fronttriangle.moveTo(0, 0);
+				fronttriangle.lineTo(3.5, 0);
+				fronttriangle.lineTo(1.75, 1.75);
+				fronttriangle.lineTo(0, 0);
+
+				var rooffplane = new THREE.Mesh(new THREE.ShapeGeometry(fronttriangle), roof);
+				rooffplane.position.x =- 1.60;
+				rooffplane.position.y = 2;
+				rooffplane.position.z = 2.20;
+				rooffplane.castShadow = true;
+				rooffplane.receiveShadow = true;
+				scene.add(rooffplane);
+
+			// back view of the triangle
+				var backtriangle = new THREE.Shape();
+				backtriangle.moveTo(0, 0);
+				backtriangle.lineTo(3.5, 0);
+				backtriangle.lineTo(1.75,1.75);
+				backtriangle.lineTo(0, 0);
+				var roofbplane = new THREE.Mesh(new THREE.ShapeGeometry(backtriangle), roof);
+				roofbplane.position.x =- 1.60;
+				roofbplane.position.y = 2;
+				roofbplane.position.z =- 2;
+				roofbplane.castShadow = true;
+				roofbplane.receiveShadow = true;
+				scene.add(roofbplane);
+
+
+			// door
+
+				var door = new THREE.Mesh(new THREE.PlaneGeometry(0.85, 1.75), door);
+				scene.add(door);
+				door.position.x = 0.20;
+				door.position.y = 0.89;
+				door.position.z = 2.03;
+				door.castShadow = true;
+				door.receiveShadow = true;
+
+
+			//front window( left)
+
+				var frontlwindow = new THREE.Mesh(new THREE.PlaneGeometry(0.73,0.73), windows);
+				frontlwindow.position.x =- 0.65;
+				frontlwindow.position.y = 1.55;
+				frontlwindow.position.z = 2.03;
+				frontlwindow.castShadow = true;
+				frontlwindow.receiveShadow = true;
+				scene.add(frontlwindow);
+
+
+			// front windows (right)
+				var frontrwindow = new THREE.Mesh(new THREE.PlaneGeometry(0.73, 0.73), windows);
+				frontrwindow.position.x = 1.05;
+				frontrwindow.position.y = 1.55;
+				frontrwindow.position.z = 2.03;
+				frontrwindow.castShadow = true;
+				frontrwindow.receiveShadow = true;
+				scene.add(frontrwindow);
+
+
+
+
+		//side window 1 (left side)
+
+				var lsidelwindow = new THREE.Mesh(new THREE.PlaneGeometry(0.73, 0.73), windows);
+				lsidelwindow.rotation.y = THREE.Math.degToRad(90);
+				lsidelwindow.position.x =- 1.32;
+				lsidelwindow.position.y = 1.45;
+				lsidelwindow.position.z =- 0.80;
+				lsidelwindow.castShadow = true;
+				lsidelwindow.receiveShadow = true;
+				scene.add(lsidelwindow);
+
+
+			//side window 2 (left side)
+
+				var lsiderwindow = new THREE.Mesh(new THREE.PlaneGeometry(0.73, 0.73), windows);
+
+				lsiderwindow.rotation.y = THREE.Math.degToRad(90);
+				lsiderwindow.position.x=- 1.32;
+				lsiderwindow.position.y= 1.45;
+				lsiderwindow.position.z= 0.80;
+				lsiderwindow.castShadow = true;
+				lsiderwindow.receiveShadow = true;
+				scene.add(lsiderwindow);
+
+			//side window 1 (right side)
+
+				var rsidelwindow = new THREE.Mesh(new THREE.PlaneGeometry(0.73,0.73), windows);
+				rsidelwindow.rotation.y = THREE.Math.degToRad(90);
+				rsidelwindow.position.x = 1.72;
+				rsidelwindow.position.y = 1.45;
+				rsidelwindow.position.z =- 0.80;
+				scene.add(rsidelwindow);
+
+			//side window 2 (right side)
+
+				var rsiderwindow = new THREE.Mesh(new THREE.PlaneGeometry(0.73,0.73), windows);
+				rsiderwindow.rotation.y = THREE.Math.degToRad(90);
+				rsiderwindow.position.x = 1.72;
+				rsiderwindow.position.y = 1.45;
+				rsiderwindow.position.z = 0.80;
+				scene.add(rsiderwindow);
+
+			// open window
+
+				var openwindow1 = new THREE.Mesh(new THREE.PlaneGeometry(0.73,0.73), windows);
+				//openwindow1.rotation.y = THREE.Math.degToRad(90);
+				openwindow1.position.x = 1.62;
+				openwindow1.position.y = 1.45;
+				openwindow1.position.z = 1.14;
+				scene.add(openwindow1);
+
+			// open window
+
+				var openwindow2 = new THREE.Mesh(new THREE.PlaneGeometry(0.73,0.73), windows);
+				//openwindow2.rotation.y = THREE.Math.degToRad(90);
+				openwindow2.position.x = 1.62;
+				openwindow2.position.y = 1.45;
+				openwindow2.position.z = 0.56;
+				scene.add(openwindow2);
+
+			// back window
+
+				var backwindow = new THREE.Mesh(new THREE.PlaneGeometry(1.20,0.73), windows);
+
+				//plane.rotation.y = THREE.Math.degToRad(90);
+				backwindow.position.x = 0.20;
+				backwindow.position.y = 1.45;
+				backwindow.position.z =- 2.03;
+				scene.add(backwindow);
+
+
+
+				var welcome = new THREE.Mesh(new THREE.PlaneGeometry(1.20,0.73), welcomehome);
+
+				//plane.rotation.y = THREE.Math.degToRad(90);
+				welcome.position.x = 0.20;
+				welcome.position.y = 1.65;
+				welcome.position.z =- 1.93;
+				scene.add(welcome);
+/*
+				var sofa = new THREE.Mesh(new THREE.PlaneGeometry(3.1,1.43), sofaset);
+				//plane.rotation.y = THREE.Math.degToRad(90);
+				sofa.position.x = 0.20;
+				sofa.position.y = 0.46;
+				sofa.position.z =- 1.93;
+				scene.add(sofa);
+
+
+				var sofal = new THREE.Mesh(new THREE.PlaneGeometry(2.5,1.43), sofaset);
+		sofal.rotation.y = THREE.Math.degToRad(90);
+				sofal.position.x =- 1.22;
+				sofal.position.y = 0.46;
+				sofal.position.z = 0.20;
+				scene.add(sofal);
+*/
+
+			//scene.add( new THREE.AmbientLight(0x202020 ) );
+				//var ambientLight = new THREE.AmbientLight(0xf5ff59);
+					var light = new THREE.SpotLight( 0xf5ff59, 1.5 );
+					
+light.position.set(10, 150, 9);
+//light.angle = 20 * Math.PI / 180;
+//light.exponent = 1;
+//light.target.position.set( 0, 200, 0 );
+scene.add( light );
+	
+
+				//var light = new THREE.SpotLight(0xf5ff59);
+				//light.position.set(10, 1050, 9).normalize();
+				//light.target = wallbase;
+				//scene.add(light);
+
+				renderer.shadowMapEnabled = true;
+				renderer.shadowMapSoft = true;
+
+				light.shadowCameraNear = 500;
+				//light.shadowCameraFar = camera.far;
+				light.shadowCameraFov = 50;
+
+				light.shadowMapBias = 10;
+				light.shadowMapDarkness = 0;
+				light.shadowMapWidth = 1024;
+				light.shadowMapHeight = 1024;
+
+				light.castShadow = true;
+
+
+
+			var render = function () {
+			requestAnimationFrame(render);
+			var delta = clock.getDelta();
+				//console.log(delta);
+			renderer.render(scene, camera);
+
+			};
+			render();
+
+	</script>
+	
+
+</body>
+
+
+</html>
