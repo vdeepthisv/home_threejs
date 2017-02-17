@@ -1,4 +1,4 @@
-Assignement 5: 3D House with more features
+3D House using threejs
 
 1.Implemented this assignment in threejs.
 	The main reason I chose threejs is easiness to use and we dont have to install any extra plug-ins.There is a lot of material on concepts and examples
@@ -12,7 +12,7 @@ Assignement 5: 3D House with more features
 
 4.Used shineniness on roof of the house (MeshLambertMaterial)
 
-5.For 'impress me' - I have added zoom-in/ zoom out, shadows and walk through the house (and even inside the house) 
+5. I have added zoom-in/ zoom out, shadows and walk through the house (and even inside the house) 
 	using the javascript functions orbitcontroller.js
 	Implemented lighting (used ambient light) and directional light and implemented shadows for the house on the grass. Also made the apperance of the 
 	house look more natural with open windows and placed some objects inside the house
